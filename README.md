@@ -13,3 +13,5 @@ WHERE  U.NAME = RTRIM(LTRIM({{@Username Default '' Describe 'The name of the use
 ```
 
 Based on the default value, the name is being inferred as a string, but you could be clear doing `As String` inside it.
+
+TQL is written with [PegJS](http://pegjs.org/) and open-source under MIT License.
