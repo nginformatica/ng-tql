@@ -1,0 +1,24 @@
+{
+  "name": "tql",
+  "version": "0.1.0",
+  "description": "A domain specific language that extends SQL and allows visual metaprogramming",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nginformatica/tql.git"
+  },
+  "keywords": [
+    "tql",
+    "sql",
+    "wizard"
+  ],
+  "author": "Marcelo Camargo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nginformatica/tql/issues"
+  },
+  "homepage": "https://github.com/nginformatica/tql#readme"
+}
