@@ -1,5 +1,5 @@
 {
-  "name": "tql",
+  "name": "ng-tql",
   "version": "0.1.0",
   "description": "A domain specific language that extends SQL and allows visual metaprogramming",
   "main": "index.js",
