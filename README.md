@@ -14,6 +14,15 @@ WHERE  U.NAME = RTRIM(LTRIM({{@Username Default '' Describe 'The name of the use
 
 Based on the default value, the name is being inferred as a string, but you could be clear doing `As String` inside it.
 
+#### Usage
+
+```javascript
+import TQL from 'ng-tql';
+
+const ast = TQL.parse('@Field Default 1');
+console.log(ast);
+```
+
 TQL is written with [PegJS](http://pegjs.org/) and open-source under MIT License.
 
 ![NGi](https://avatars1.githubusercontent.com/u/21263692?v=3&s=200)
