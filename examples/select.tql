@@ -1,0 +1,7 @@
+SELECT
+    {{@PRIMARY_KEY As String Default "" Describe "Primary key of the table"}}
+FROM
+    {{@TABLE As String Default "STJ" Describe "Where to find data"}}
+LIMIT
+    {{@LIMIT As Number Default 10 Describe "Data limit" Base 10}}
+
