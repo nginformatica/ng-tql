@@ -1,6 +1,6 @@
 {
   "name": "ng-tql",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A domain specific language that extends SQL and allows visual metaprogramming",
   "main": "./dist/tql.js",
   "scripts": {
