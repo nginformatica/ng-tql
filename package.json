@@ -25,6 +25,8 @@
   "homepage": "https://github.com/nginformatica/ng-tql#readme",
   "dependencies": {},
   "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2",
     "pegjs": "^0.10.0",
     "uglifyjs": "^2.4.10"
   }
