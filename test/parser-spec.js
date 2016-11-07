@@ -124,5 +124,31 @@ describe('Parser specification', () => {
                 tql.parse('Declare BirthDay := 4 Dec -1996');
             }).to.throw(Error, /Year of date must be positive/);
         });
+
+        it('Should allow seconds on datetime', () => {
+            tql.parse('Declare ExactMoment := 7 Nov 2016 13:43:32');
+        });
+
+        it ('Should allow a datetime to be assigned to Date', () => {
+            tql.parse('Declare Event: Date := 7 Nov 2016 13:30');
+        });
+
+        it('Should validate hours', () => {
+            expect(() => {
+                tql.parse('Declare Event: Date := 7 Nov 2016 -13:00');
+            }).to.throw(Error, /Hour of time must be between 0 and 23/);
+        });
+
+        it('Should validate minutes', () => {
+            expect(() => {
+                tql.parse('Declare Event: Date := 7 Nov 2016 13:78');
+            }).to.throw(Error, /Minute of time must be between 0 and 59/);
+        });
+
+        it('Should validate seconds', () => {
+            expect(() => {
+                tql.parse('Declare Event: Date := 7 Nov 2016 13:10:61');
+            }).to.throw(Error, /Seconds of time must be between 0 and 59/);
+        });
     });
 });

@@ -218,7 +218,7 @@ Bool 'bool'
   / '.f.'i { return false; }
 
 Date 'date'
-  = day:Number __ month:Month __ year:Number {
+  = day:Int __ month:Month __ year:Int time:Time? {
     // Ensure valid day and month
     if (day < 0) {
       throw new Error('Day of date must be positive');
@@ -228,7 +228,30 @@ Date 'date'
       throw new Error('Year of date must be positive');
     }
 
-    return new Date(year, monthToJS(month), day);
+    return null !== time
+      ? new Date(year, monthToJS(month), day, time.hour, time.minute, time.seconds)
+      : new Date(year, monthToJS(month), day);
+  }
+
+Time 'time'
+  = __ hour:Int ':' minute:Int seconds:( ':' s:Int { return s; } )? {
+    if (hour < 0 || hour > 23) {
+      throw new Error('Hour of time must be between 0 and 23');
+    }
+
+    if (minute < 0 || minute > 59) {
+      throw new Error('Minute of time must be between 0 and 59')
+    }
+
+    if (seconds < 0 || seconds > 59) {
+      throw new Error('Seconds of time must be between 0 and 59');
+    }
+
+    return {
+      hour: hour,
+      minute: minute,
+      seconds: seconds || 0
+    };
   }
 
 Month 'month'
