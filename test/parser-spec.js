@@ -14,15 +14,18 @@ describe('Parser specification', () => {
         });
 
         it('Should infer symbols', () => {
-
+            const ast = tql.parse('Declare Table := STJT30');
+            expect(ast[0].type[0]).to.be.equal('symbol');
         });
 
         it('Should infer any char(*) to varchar', () => {
-
+            const ast = tql.parse('Declare Username := \'Admin\'');
+            expect(ast[0].type[0]).to.be.equal('varchar');
         });
 
         it('Should infer booleans', () => {
-
+            const ast = tql.parse('Declare ShouldUpdate := .F.');
+            expect(ast[0].type[0]).to.be.equal('bool');
         });
 
     });
