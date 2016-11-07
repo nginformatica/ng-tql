@@ -93,4 +93,14 @@ describe('Parser specification', () => {
             tql.parse('Declare Price Picture \'99.99\' := 10');
         });
     });
+
+    describe('Description', () => {
+        it('Allows descriptions to be placed after all', () => {
+            tql.parse('Declare Table: Symbol := STJT30 { Table to select }');
+        });
+
+        it('Allows descriptions with line break', () => {
+            tql.parse('Declare Table: Symbol := STJT30 { Table\n to select }');
+        });
+    });
 });
