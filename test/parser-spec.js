@@ -3,7 +3,6 @@ const tql = require('../dist/tql');
 
 describe('Parser specification', () => {
     describe('Inferred type declarations', () => {
-
         it('Shouldn\'t support free-type variables', () => {
             expect(() => tql.parse('Declare Age')).to.throw(TypeError, /Cannot infer type of free variable/);
         });
@@ -32,7 +31,6 @@ describe('Parser specification', () => {
             const ast = tql.parse('Declare ShouldUpdate := .F.');
             expect(ast[0].type[0]).to.be.equal('bool');
         });
-
     });
 
     describe('Type declarations' , () => {
@@ -107,6 +105,24 @@ describe('Parser specification', () => {
 
         it('Allows descriptions with line break', () => {
             tql.parse('Declare Table: Symbol := STJT30 { Table\n to select }');
+        });
+    });
+
+    describe('Dates', () => {
+        it('Should allow a date to be assigned to Date', () => {
+            tql.parse('Declare BirthDay: Date := 4 Dec 1996');
+        });
+
+        it('Should reject negative day', () => {
+            expect(() => {
+                tql.parse('Declare BirthDay := -4 Dec 1996');
+            }).to.throw(Error, /Day of date must be positive/);
+        });
+
+        it('Should reject negative year', () => {
+            expect(() => {
+                tql.parse('Declare BirthDay := 4 Dec -1996');
+            }).to.throw(Error, /Year of date must be positive/);
         });
     });
 });

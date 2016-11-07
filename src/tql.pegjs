@@ -1,4 +1,11 @@
 {
+  var monthToJS = function (month) {
+    return [
+      'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'ago',
+      'sep', 'oct', 'nov', 'dec'
+    ].indexOf(month.toLowerCase());
+  };
+
   var isDouble = function (n) {
     return n % 1 !== 0;
   };
@@ -23,7 +30,7 @@
       case 'string':
         return 'string(' + decl.value.value.length + ')';
       default:
-        return decl.value.value.toString();
+        return decl.value.type.toString();
     }
   };
 
@@ -64,6 +71,9 @@
           break;
         case 'bool':
           decl.type = ['bool'];
+          break;
+        case 'date':
+          decl.type = ['date'];
           break;
       }
 
@@ -114,6 +124,10 @@
           return decl;
         }
         break;
+      case 'date':
+        if ('date' === decl.value.type) {
+          return decl;
+        }
     }
 
     throw new TypeError("Value of type `" + valTypeToString(decl) + "' is not " +
@@ -176,7 +190,8 @@ Picture 'picture'
   = _ 'picture'i __ s:String { return s; }
 
 Value 'value'
-  = n:Number { return { type: 'number', value: n }; }
+  = d:Date   { return { type: 'date', value: d }; }
+  / n:Number { return { type: 'number', value: n }; }
   / i:Ident  { return { type: 'symbol', value: i }; }
   / s:String { return { type: 'string', value: s }; }
   / b:Bool   { return { type: 'bool', value: b }; }
@@ -201,6 +216,34 @@ String 'string'
 Bool 'bool'
   = '.t.'i { return true; }
   / '.f.'i { return false; }
+
+Date 'date'
+  = day:Number __ month:Month __ year:Number {
+    // Ensure valid day and month
+    if (day < 0) {
+      throw new Error('Day of date must be positive');
+    }
+
+    if (year < 0) {
+      throw new Error('Year of date must be positive');
+    }
+
+    return new Date(year, monthToJS(month), day);
+  }
+
+Month 'month'
+  = 'jan'i
+  / 'feb'i
+  / 'mar'i
+  / 'apr'i
+  / 'may'i
+  / 'jun'i
+  / 'jul'i
+  / 'ago'i
+  / 'sep'i
+  / 'oct'i
+  / 'nov'i
+  / 'dec'i
 
 Description 'description'
   = _ '{' chr:( !'}' c:. { return c; } )* '}' _ {
