@@ -1,219 +1,194 @@
-/**
- * Grammar for (T)emplate (Q)uery (L)anguage
- * @author Marcelo Camargo
- * @since 2015/10/08
- */
 {
-  var TypeChecker = {
-    assert: function(t1, t2) {
-      if (t1 !== t2) {
-        throw new TypeError("Type [" + t2 + "] is not assignable to [" + t1 + "]");
+  var checkDuplication = function (list) {
+    var found = [];
+    list.forEach(function (item) {
+      if (found.indexOf(item.name) !== -1) {
+        throw new Error('Field `' + item.name + "' declared twice");
       }
+
+      found.push(item.name);
+    });
+    return list;
+  };
+
+  var valTypeToString = function (decl) {
+    switch (decl.value.type) {
+      case 'number':
+        return 'number(' + decl.value.value + ')';
+      case 'string':
+        return 'string(' + decl.value.value.length + ')';
+      default:
+        return decl.value.value.toString();
     }
+  };
+
+  var typeToString = function (type) {
+    switch (type[0]) {
+      case 'char':
+        return 'varchar(' + type[1].size + ')';
+      case 'range':
+        return 'range(' + type[1].from + ', ' + type[1].to + ')';
+      default:
+        return type[0];
+    }
+  };
+
+  var typeChecker = function (decl) {
+    // Unable to infer type because neither type nor value were informed
+    if (null === decl.type && null === decl.value) {
+      throw new TypeError('Cannot infer type of free variable ' + decl.name);
+    }
+
+    // When only type declaration was provided
+    if (null === decl.value && null !== decl.type) {
+      return decl;
+    }
+
+    // When no type was provided, but there is a default value
+    // Reassign variable type to value type
+    if (null === decl.type && null !== decl.value) {
+      switch (decl.value.type) {
+        case 'number':
+          decl.type = ['int'];
+          break;
+        case 'symbol':
+          decl.type = ['symbol'];
+          break;
+        case 'string':
+          decl.type = ['varchar'];
+          break;
+        case 'bool':
+          decl.type = ['bool'];
+          break;
+      }
+
+      return decl;
+    }
+
+    // When both types are declared, check whether right matches left
+    switch (decl.type[0]) {
+      case 'int':
+        if ('number' === decl.value.type) {
+          return decl;
+        }
+        break;
+      case 'varchar':
+        if ('string' === decl.value.type) {
+          return decl;
+        }
+        break;
+      case 'nat':
+        if ('number' === decl.value.type && decl.value.value >= 0) {
+          return decl;
+        }
+        break;
+      case 'bool':
+        if ('bool' === decl.value.type) {
+          return decl;
+        }
+        break;
+      case 'symbol':
+        if ('symbol' === decl.value.type) {
+          return decl;
+        }
+        break;
+      case 'char':
+        if ('string' === decl.value.type && decl.value.value.length <= decl.type[1].size) {
+          return decl;
+        }
+        break;
+      case 'range':
+        if ('number' === decl.value.type
+          && decl.value.value >= decl.type[1].from
+          && decl.value.value <= decl.type[1].to) {
+          return decl;
+        }
+    }
+
+    throw new TypeError("Value of type `" + valTypeToString(decl) + "' is not " +
+      "assignable to field of type `" + typeToString(decl.type) + "'");
   };
 }
 
-Start
-  = Template
+TQLCode 'TQL code'
+  = fields:FieldDecl* _ {
+    var declarations = fields.map(typeChecker);
+    checkDuplication(declarations);
+    return declarations;
+  }
 
-Template "template"
-  = f:FieldDecl t:(__ t:Type { return t; })? _ d:DefaultValue? _ ds:Describe? _ b:BaseValue? _ p:Picture? {
-    var expect, currentType;
-    var needsCheck = true;
-    var is = function(x) { return x !== null; };
-
-    // Type inference implementation
-
-    if (!is(t) && is(d)) {
-      /**
-       * When no expectations, but value defined, expectations become of the
-       * type of the defined value.
-       * Infer EXPECTED on VALUE.
-       */
-      currentType = typeof d;
-      expect      = typeof d;
-    } else if (is(t) && is(d)) {
-      /**
-       * When there are expectations and a value, type check them.
-       */
-      currentType = typeof d;
-      expect      = t;
-    } else if (!is(t) && !is(d)) {
-      /**
-       * When no value and no typecheck, auto-infer string.
-       */
-      expect = "string";
-      needsCheck  = false;
-      // Auto-infer
-    } else if (is(t) && !is(d)) {
-      /**
-       * When expectations, but no value, set the expectations and skip the
-       * type check.
-       */
-      expect     = t;
-      needsCheck = false;
+FieldDecl 'field declaration'
+  = _ 'declare'i __
+    name:Ident
+    type:TypeDecl?
+    picture:Picture?
+    value:Assignment?
+    description:Description? {
+    return {
+      kind: 'FieldDecl',
+      name: name,
+      type: type,
+      picture: picture,
+      value: value,
+      description: description
     }
-
-    needsCheck && TypeChecker.assert(expect, currentType);
-
-    return {
-      field: f,
-      type: expect,
-      default: d,
-      base: b || "_",
-      describe: ds || "",
-      picture: p || ""
-    };
   }
 
-/* Declarations */
-FieldDecl "field declaration"
-  = "@" name:Identifier {
-    return name.value;
+Ident 'identifier'
+  = x:[_a-z]i xs:[_a-z0-9]i* {
+    return [x].concat(xs).join('');
   }
 
-Type "type declaration"
-  = AsToken __ t:SupportedType {
-    return t;
+Assignment 'assignment'
+  = _ ':=' _ v:Value { return v; }
+
+TypeDecl 'type declaration'
+  = _ ':' _ type:Type { return type; }
+
+Type 'type'
+  = 'int'i     { return ['int']; }
+  / 'varchar'i { return ['varchar']; }
+  / 'date'i    { return ['date']; }
+  / 'nat'i     { return ['nat']; }
+  / 'bool'i    { return ['bool']; }
+  / 'symbol'i  { return ['symbol']; }
+  / 'char'i _ '(' _ n:Number _ ')' { return ['char', { size: n }] }
+  / 'range'i _ '(' _ from:Number _ ',' _ to:Number _ ')' {
+    return ['range', {
+      from: from,
+      to: to
+    }];
   }
 
-SupportedType "type"
-  = NumberType  { return "number"; }
-  / StringType  { return "string"; }
-  / DateType    { return "object"; }
+Picture 'picture'
+  = _ 'picture'i __ s:String { return s; }
 
-DefaultValue "default value"
-  = DefaultToken __ e:Expr {
-    return e;
+Value 'value'
+  = n:Number { return { type: 'number', value: n }; }
+  / i:Ident  { return { type: 'symbol', value: i }; }
+  / s:String { return { type: 'string', value: s }; }
+  / b:Bool   { return { type: 'bool', value: b }; }
+
+Number 'number'
+  = sig:[+-]? xss:[0-9]+ {
+    return parseInt((sig || '') + xss.join(''), 10);
   }
 
-Describe "describe value"
-  = DescribeToken __ e:String {
-    return e;
+String 'string'
+  = "'" chr:(!"'" w:. { return w; })* "'" { return chr.join(''); }
+
+Bool 'bool'
+  = '.t.'i { return true; }
+  / '.f.'i { return false; }
+
+Description 'description'
+  = _ '{' chr:( !'}' c:. { return c; } )* '}' _ {
+    return chr.join('').trim();
   }
 
-BaseValue "base value"
-  = BaseToken __ e:Expr {
-    return e;
-  }
+_ 'optional whitespace'
+  = [ \t\r\n]*
 
-Picture "picture"
-  = PictureToken __ s:String {
-    return s;
-  }
+__ 'obligatory whitespace'
+  = [ \t\r\n]+
 
-Expr "expression"
-  = Number
-  / String
-  / Date
-
-Number "number"
-  = m:( "+" / "-" )? x:[0-9]+ xs:("." xs:[0-9]+ { return xs; })? {
-    var op = m || "";
-
-    return xs
-      ? parseFloat(op + x.join("") + "." + xs.join(""))
-      : parseInt(op + x.join(""));
-  }
-
-String "string"
-  = '""' {
-    return "";
-  }
-  / '"' str:(!UnescapedQuote AnyChar)* last:UnescapedQuote {
-    var r = "";
-    for (var c in str) {
-      r += str[c][1];
-    }
-    return r + last;
-  }
-
-Date "date"
-  = "#" year:[0-9]+ "/" month:[0-9]+ "/" day:[0-9]+ _ time:Time? {
-    var record = function(n) {
-      return parseInt(n.join(""));
-    };
-
-    return time
-      ? new Date(record(year), record(month) - 1, record(day), time.hour, time.minute, time.second)
-      : new Date(record(year), record(month) - 1, record(day));
-  }
-
-Time "time"
-  = "#" hour:[0-9]+ ":" minute:[0-9]+ ":" second:[0-9]+ {
-    var record = function(n) {
-      return parseInt(n.join(""));
-    };
-
-    return {
-      hour: record(hour),
-      minute: record(minute),
-      second: record(second)
-    };
-  }
-
-UnescapedQuote
-  = last:[^\\] '"' { return last; }
-
-AnyChar
-  = .
-
-/* Keywords */
-
-Keyword "keyword"
-  = AsToken
-  / BaseToken
-  / DefaultToken
-  / DescribeToken
-
-AsToken "as"
-  = "as"i !IdentRest
-
-BaseToken "base"
-  = "base"i !IdentRest
-
-DefaultToken "default"
-  = "default"i !IdentRest
-
-DescribeToken "describe"
-  = "describe"i !IdentRest
-
-PictureToken "picture"
-  = "picture"i !IdentRest
-
-/* Type keywords */
-NumberType "number type"
-  = "number"i !IdentRest
-
-StringType "string type"
-  = "string"i !IdentRest
-
-DateType "date type"
-  = "date"i !IdentRest
-
-/* Identifier */
-Identifier "identifier"
-  = !Keyword name:IdentName {
-    return name;
-  }
-
-IdentName
-  = x:IdentStart xs:IdentRest* {
-    return {
-      type: "Identifier",
-      value: [x].concat(xs).join("")
-    };
-  }
-
-IdentStart
-  = [a-zA-Z_\x7f-\xff]
-
-IdentRest
-  = [a-zA-Z0-9_\x7f-\xff]
-
-/* Whitespace and newline */
-_ "optional whitespace"
-  = [ \t]*
-
-__ "mandatory whitespace"
-  = [ \t]+
