@@ -25,7 +25,7 @@ Declare Price: Double
 Use `:=` to create default values, such as:
 
 ```cobol
-Describe Age: Nat := 18
+Declare Age: Nat := 18
 ```
 
 ### Pictures
@@ -33,7 +33,7 @@ Describe Age: Nat := 18
 Pictures are made to tell how to display the data (on Protheus and on Query Wizard).
 
 ```cobol
-Describe Price: Double Picture '99.99' := 13.87
+Declare Price: Double Picture '99.99' := 13.87
 ```
 
 ### Range Types
@@ -41,8 +41,8 @@ Describe Price: Double Picture '99.99' := 13.87
 Range types allow you to restrict data in ranges
 
 ```cobol
-Describe Age: Range(18, 60) := 10
-Describe CPF: Char(11)
+Declare Age: Range(18, 60) := 10
+Declare CPF: Char(11)
 ```
 
 ### DateTime
@@ -50,8 +50,8 @@ Describe CPF: Char(11)
 You can use formats like:
 
 ```cobol
-Describe BirthDay := 4 Dec 1996
-Describe EventTime := 7 Nov 2016 13:45
+Declare BirthDay := 4 Dec 1996
+Declare EventTime := 7 Nov 2016 13:45
 ```
 
 ### Descriptions
@@ -59,7 +59,7 @@ Describe EventTime := 7 Nov 2016 13:45
 Specify information about the field within `{` and `}`.
 
 ```cobol
-Describe Age: Nat Picture '99' := 18 { The user age to search }
+Declare Age: Nat Picture '99' := 18 { The user age to search }
 ```
 
 ## Usage
