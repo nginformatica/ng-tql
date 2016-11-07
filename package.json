@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "pegjs -o ./dist/tql.js ./src/tql.pegjs",
     "minify": "uglifyjs ./dist/tql.js -m -o ./dist/tql.min.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive"
   },
   "repository": {
     "type": "git",
