@@ -64,6 +64,13 @@ Describe Age: Nat Picture '99' := 18 { The user age to search }
 
 ## Usage
 
+### Install
+
+- Yarn: `yarn add ng-tql`
+- npm: `npm install ng-tql`
+
+### Compile from sources
+
 Using Yarn:
 
 ```shell
@@ -79,6 +86,8 @@ npm install
 npm run compile
 npm test
 ```
+
+### Using with ES6
 
 ```javascript
 import { parse } from 'ng-tql';
