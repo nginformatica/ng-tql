@@ -29,4 +29,45 @@ describe('Parser specification', () => {
         });
 
     });
+
+    describe('Type declarations' , () => {
+        it('Should allow every type to have defined variables without value', () => {
+            const source = [
+                'Declare Val: Int',
+                'Declare Name: VarChar',
+                'Declare When: Date',
+                'Declare Age: Nat',
+                'Declare Trigger: Bool',
+                'Declare Table: Symbol',
+                'Declare Id: Char(32)',
+                'Declare Limit: Range(10, 100)'
+            ];
+
+            tql.parse(source.join('\n'));
+        });
+
+        it('Should restrict negative numbers on Nat', () => {
+            expect(() => {
+                tql.parse('Declare Age: Nat := -10');
+            }).to.throw(TypeError, /Value of type `number\(-10\)' is not assignable to field of type `nat'/);
+        });
+
+        it('Should restrict max length of string in Char(*)', () => {
+            expect(() => {
+                tql.parse('Declare Val: Char(10) := \'Trixie Mattel\'');
+            }).to.throw(TypeError, /Value of type `string\(13\)' is not assignable to field of type `char\(10\)'/);
+        });
+
+        it('Should restrict max number in Range(*, *)', () => {
+            expect(() => {
+                tql.parse('Declare Val: Range(1, 10) := 11');
+            }).to.throw(TypeError, /Value of type `number\(11\)' is not assignable to field of type `range\(1, 10\)'/);
+        });
+
+        it('Should restrict min number in Range(*, *)', () => {
+            expect(() => {
+                tql.parse('Declare Val: Range(1, 10) := -20');
+            }).to.throw(TypeError, /Value of type `number\(-20\)' is not assignable to field of type `range\(1, 10\)'/);
+        });
+    });
 });

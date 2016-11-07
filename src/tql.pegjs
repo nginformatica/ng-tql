@@ -25,7 +25,7 @@
   var typeToString = function (type) {
     switch (type[0]) {
       case 'char':
-        return 'varchar(' + type[1].size + ')';
+        return 'char(' + type[1].size + ')';
       case 'range':
         return 'range(' + type[1].from + ', ' + type[1].to + ')';
       default:
