@@ -1,10 +1,12 @@
 {
   "name": "ng-tql",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A domain specific language that extends SQL and allows visual metaprogramming",
-  "main": "index.js",
+  "main": "./dist/tql.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "pegjs -o ./dist/tql.js ./src/tql.pegjs",
+    "minify": "uglifyjs ./dist/tql.js -m -o ./dist/tql.min.js",
+    "test": "mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -18,7 +20,14 @@
   "author": "Marcelo Camargo",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nginformatica/tql/issues"
+    "url": "https://github.com/nginformatica/ng-tql/issues"
   },
-  "homepage": "https://github.com/nginformatica/tql#readme"
+  "homepage": "https://github.com/nginformatica/ng-tql#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2",
+    "pegjs": "^0.10.0",
+    "uglifyjs": "^2.4.10"
+  }
 }
