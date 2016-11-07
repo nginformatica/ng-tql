@@ -1,4 +1,4 @@
-### TQL
+## TQL
 
 > A domain specific language that extends SQL and allows visual metaprogramming
 
@@ -6,9 +6,9 @@ TQL is a small language that extends SQL and integrates with [`ng-sql-parser`](h
 
 ### Type System
 
-TQL has a small type-system and an inference model. It is able to deduce the type of **every** expression placed (all expressions are literals).
+TQL has a small type-system and an inference model. It is able to deduce the type of **every** expression placed (all expressions are literals). All type declarations are optional.
 
-```sql
+```cobol
 Declare Val: Int
 Declare Name: VarChar
 Declare When: Date
@@ -18,6 +18,48 @@ Declare Table: Symbol
 Declare Id: Char(32)
 Declare Limit: Range(10, 100)
 Declare Price: Double
+```
+
+### Default Values
+
+Use `:=` to create default values, such as:
+
+```cobol
+Describe Age: Nat := 18
+```
+
+### Pictures
+
+Pictures are made to tell how to display the data (on Protheus and on Query Wizard).
+
+```cobol
+Describe Price: Double Picture '99.99' := 13.87
+```
+
+### Range Types
+
+Range types allow you to restrict data in ranges
+
+```cobol
+Describe Age: Range(18, 60) := 10
+Describe CPF: Char(11)
+```
+
+### DateTime
+
+You can use formats like:
+
+```cobol
+Describe BirthDay := 4 Dec 1996
+Describe EventTime := 7 Nov 2016 13:45
+```
+
+### Descriptions
+
+Specify information about the field within `{` and `}`.
+
+```cobol
+Describe Age: Nat Picture '99' := 18 { The user age to search }
 ```
 
 ### Credits
