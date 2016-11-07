@@ -8,9 +8,14 @@ describe('Parser specification', () => {
             expect(() => tql.parse('Declare Age')).to.throw(TypeError, /Cannot infer type of free variable/);
         });
 
-        it('Should infer any number to integer', () => {
+        it('Should infer integers', () => {
             const ast = tql.parse('Declare Age := 18');
             expect(ast[0].type[0]).to.be.equal('int');
+        });
+
+        it('Should infer doubles', () => {
+            const ast = tql.parse('Declare Price := 10.5');
+            expect(ast[0].type[0]).to.be.equal('double');
         });
 
         it('Should infer symbols', () => {
@@ -40,7 +45,8 @@ describe('Parser specification', () => {
                 'Declare Trigger: Bool',
                 'Declare Table: Symbol',
                 'Declare Id: Char(32)',
-                'Declare Limit: Range(10, 100)'
+                'Declare Limit: Range(10, 100)',
+                'Declare Price: Double'
             ];
 
             tql.parse(source.join('\n'));
@@ -49,7 +55,7 @@ describe('Parser specification', () => {
         it('Should restrict negative numbers on Nat', () => {
             expect(() => {
                 tql.parse('Declare Age: Nat := -10');
-            }).to.throw(TypeError, /Value of type `number\(-10\)' is not assignable to field of type `nat'/);
+            }).to.throw(TypeError, /Value of type `int\(-10\)' is not assignable to field of type `nat'/);
         });
 
         it('Should restrict max length of string in Char(*)', () => {
@@ -61,13 +67,13 @@ describe('Parser specification', () => {
         it('Should restrict max number in Range(*, *)', () => {
             expect(() => {
                 tql.parse('Declare Val: Range(1, 10) := 11');
-            }).to.throw(TypeError, /Value of type `number\(11\)' is not assignable to field of type `range\(1, 10\)'/);
+            }).to.throw(TypeError, /Value of type `int\(11\)' is not assignable to field of type `range\(1, 10\)'/);
         });
 
         it('Should restrict min number in Range(*, *)', () => {
             expect(() => {
                 tql.parse('Declare Val: Range(1, 10) := -20');
-            }).to.throw(TypeError, /Value of type `number\(-20\)' is not assignable to field of type `range\(1, 10\)'/);
+            }).to.throw(TypeError, /Value of type `int\(-20\)' is not assignable to field of type `range\(1, 10\)'/);
         });
     });
 

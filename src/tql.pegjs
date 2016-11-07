@@ -1,4 +1,8 @@
 {
+  var isDouble = function (n) {
+    return n % 1 !== 0;
+  };
+
   var checkDuplication = function (list) {
     var found = [];
     list.forEach(function (item) {
@@ -14,7 +18,8 @@
   var valTypeToString = function (decl) {
     switch (decl.value.type) {
       case 'number':
-        return 'number(' + decl.value.value + ')';
+        var subtype = isDouble(decl.value.value) ? 'double' : 'int';
+        return subtype + '(' + decl.value.value + ')';
       case 'string':
         return 'string(' + decl.value.value.length + ')';
       default:
@@ -49,7 +54,7 @@
     if (null === decl.type && null !== decl.value) {
       switch (decl.value.type) {
         case 'number':
-          decl.type = ['int'];
+          decl.type = [isDouble(decl.value.value) ? 'double' : 'int'];
           break;
         case 'symbol':
           decl.type = ['symbol'];
@@ -68,7 +73,7 @@
     // When both types are declared, check whether right matches left
     switch (decl.type[0]) {
       case 'int':
-        if ('number' === decl.value.type) {
+        if ('number' === decl.value.type && !isDouble(decl.value.value)) {
           return decl;
         }
         break;
@@ -103,6 +108,12 @@
           && decl.value.value <= decl.type[1].to) {
           return decl;
         }
+        break;
+      case 'double':
+        if ('number' === decl.value.type) {
+          return decl;
+        }
+        break;
     }
 
     throw new TypeError("Value of type `" + valTypeToString(decl) + "' is not " +
@@ -147,13 +158,14 @@ TypeDecl 'type declaration'
 
 Type 'type'
   = 'int'i     { return ['int']; }
+  / 'double'i  { return ['double']; }
   / 'varchar'i { return ['varchar']; }
   / 'date'i    { return ['date']; }
   / 'nat'i     { return ['nat']; }
   / 'bool'i    { return ['bool']; }
   / 'symbol'i  { return ['symbol']; }
-  / 'char'i _ '(' _ n:Number _ ')' { return ['char', { size: n }] }
-  / 'range'i _ '(' _ from:Number _ ',' _ to:Number _ ')' {
+  / 'char'i _ '(' _ n:Int _ ')' { return ['char', { size: n }] }
+  / 'range'i _ '(' _ from:Int _ ',' _ to:Int _ ')' {
     return ['range', {
       from: from,
       to: to
@@ -170,8 +182,17 @@ Value 'value'
   / b:Bool   { return { type: 'bool', value: b }; }
 
 Number 'number'
+  = Double
+  / Int
+
+Int 'integer'
   = sig:[+-]? xss:[0-9]+ {
     return parseInt((sig || '') + xss.join(''), 10);
+  }
+
+Double 'double'
+  = base:Int '.' rest:[0-9]+ {
+    return parseFloat(base.toString() + '.' + rest.join(''));
   }
 
 String 'string'
@@ -191,4 +212,3 @@ _ 'optional whitespace'
 
 __ 'obligatory whitespace'
   = [ \t\r\n]+
-
