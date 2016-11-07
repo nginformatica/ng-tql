@@ -83,4 +83,14 @@ describe('Parser specification', () => {
             }).to.throw(Error, /Field `AGE' declared twice/);
         });
     });
+
+    describe('Picture', () => {
+        it('Allows pictures after type declaration', () => {
+            tql.parse('Declare Price: Nat Picture \'99.99\' := 10');
+        });
+
+        it('Allows pictures after name declaration', () => {
+            tql.parse('Declare Price Picture \'99.99\' := 10');
+        });
+    });
 });
