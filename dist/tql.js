@@ -1442,11 +1442,11 @@ function peg$parse(input, options) {
     var checkDuplication = function (list) {
       var found = [];
       list.forEach(function (item) {
-        if (found.indexOf(item.name) !== -1) {
-          throw new Error('Field `' + item.name + "' declared twice");
+        if (found.indexOf(item.name.toUpperCase()) !== -1) {
+          throw new Error('Field `' + item.name.toUpperCase() + "' declared twice");
         }
 
-        found.push(item.name);
+        found.push(item.name.toUpperCase());
       });
       return list;
     };

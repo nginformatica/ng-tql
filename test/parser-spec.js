@@ -70,4 +70,17 @@ describe('Parser specification', () => {
             }).to.throw(TypeError, /Value of type `number\(-20\)' is not assignable to field of type `range\(1, 10\)'/);
         });
     });
+
+    describe('Duplication', () => {
+        it('Doesn\'t allow duplicated fields', () => {
+            const source = [
+                'Declare age := 18',
+                'Declare Age := .T.'
+            ];
+
+            expect(() => {
+                tql.parse(source.join(''));
+            }).to.throw(Error, /Field `AGE' declared twice/);
+        });
+    });
 });
