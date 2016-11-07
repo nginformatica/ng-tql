@@ -62,7 +62,25 @@ Specify information about the field within `{` and `}`.
 Describe Age: Nat Picture '99' := 18 { The user age to search }
 ```
 
-### Credits
+## Usage
+
+Using Yarn:
+
+```shell
+yarn
+yarn compile
+yarn test
+```
+
+Using npm:
+
+```shell
+npm install
+npm run compile
+npm test
+```
+
+## Credits
 
 TQL is written with [PegJS](http://pegjs.org/) by [Marcelo Camargo](https://github.com/haskellcamargo) and open-source under MIT License.
 
