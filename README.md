@@ -80,6 +80,16 @@ npm run compile
 npm test
 ```
 
+```javascript
+import { parse } from 'ng-tql';
+
+try {
+    console.log(parse('Declare Age: Nat := 18'));
+} catch (e) {
+    console.log(e);
+}
+```
+
 ## Credits
 
 TQL is written with [PegJS](http://pegjs.org/) by [Marcelo Camargo](https://github.com/haskellcamargo) and open-source under MIT License.
