@@ -151,4 +151,16 @@ describe('Parser specification', () => {
             }).to.throw(Error, /Seconds of time must be between 0 and 59/);
         });
     });
+
+    describe('Syntax', () => {
+        it('Should be case insensitive for keywords', () => {
+            const lower = tql.parse('declare X: int := 1');
+            const upper = tql.parse('Declare X: Int := 1');
+            expect(lower).to.be.deep.equal(upper);
+        });
+
+        it('Shouldn\'t care about whitespace', () => {
+            tql.parse('   declare Foo:Date:=18 Dec 1887   ');
+        });
+    });
 });
