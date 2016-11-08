@@ -1,7 +1,7 @@
 ## TQL
 
-[![Build Status](https://travis-ci.org/nginformatica/ng-tql.svg?branch=master)](https://travis-ci.org/nginformatica/ng-tql)
-![Language: TQL](https://img.shields.io/badge/language-tql-blue.svg?style=flat)
+[[![Travis](https://img.shields.io/travis/nginformatica/ng-tql.svg?style=flat-square)](https://travis-ci.org/nginformatica/ng-tql)
+![Language: TQL](https://img.shields.io/badge/language-tql-blue.svg?style=flat-square)
 
 > A domain specific language that extends SQL and allows visual metaprogramming
 
